@@ -204,5 +204,7 @@ async def admin_websocket(websocket: WebSocket):
 if __name__ == "__main__":
     import uvicorn
     import os
+    # Railway passes the port as an environment variable
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    # We MUST use "main:app" string format to ensure uvicorn finds the app correctly
+    uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
