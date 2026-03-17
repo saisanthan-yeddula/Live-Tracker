@@ -24,7 +24,7 @@ REDIS_URL = "redis://centerbeam.proxy.rlwy.net:52033"
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
 
 # MongoDB setup (Railway)
-MONGO_URL = "mongodb://gondola.proxy.rlwy.net:29702"
+MONGO_URL = "mongodb://mongo:HUSXLthePQtOuHFLYRMtpBiTbPeppidq@gondola.proxy.rlwy.net:29702"
 mongo_client = AsyncIOMotorClient(MONGO_URL)
 db = mongo_client.live_tracker
 users_collection = db.users
