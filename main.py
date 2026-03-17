@@ -66,6 +66,24 @@ ACTIVE_AGENTS_KEY = "active_agents"
 
 @app.post("/login")
 async def login(req: LoginRequest):
+    # Special case: If no users exist, allow creating the first admin
+    count = await users_collection.count_documents({})
+    if count == 0:
+        # Create default admin if requested
+        if req.name == "admin@gmail.com" and req.password == "1234":
+            new_admin = {
+                "_id": str(uuid.uuid4()),
+                "name": req.name,
+                "password": req.password,
+                "role_id": ROLE_ADMIN
+            }
+            await users_collection.insert_one(new_admin)
+            return {
+                "user_id": new_admin["_id"],
+                "name": new_admin["name"],
+                "role_id": new_admin["role_id"]
+            }
+
     user = await users_collection.find_one({"name": req.name, "password": req.password})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -201,10 +219,15 @@ async def admin_websocket(websocket: WebSocket):
     except WebSocketDisconnect:
         admin_subscribers.remove(websocket)
 
+@app.get("/health")
+async def health():
+    return {"status": "ok", "port": os.environ.get("PORT", "8000")}
+
 if __name__ == "__main__":
     import uvicorn
     import os
-    # Force port to 8000 to match your Railway routing settings
-    port = 8000
-    print(f"Forcing server to run on port {port} for Railway routing...")
+    # Get port from Railway's environment variable
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting server on port {port}...")
+    # Use "main:app" so uvicorn can find the app in this file
     uvicorn.run("main:app", host="0.0.0.0", port=port, log_level="info")
