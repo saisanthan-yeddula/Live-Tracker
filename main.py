@@ -22,13 +22,12 @@ app.add_middleware(
 import os
 
 # Redis setup (Railway)
-# Prioritize REDIS_URL, then individual Railway variables, finally hardcoded public fallback
 REDIS_URL = os.getenv("REDIS_URL")
 if not REDIS_URL:
-    # Use PUBLIC URL from screenshot as fallback (Internal DNS sometimes fails)
-    REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv@centerbeam.proxy.rlwy.net:52033"
+    raise Exception("REDIS_URL not set in environment variables")
 
-redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+print(f"REDIS_URL: {REDIS_URL}")
+redis_client = redis.from_url(REDIS_URL, decode_responses=True, retry_on_timeout=True)
 
 # MongoDB setup (Railway)
 MONGO_URL = "mongodb://mongo:HUSXLthePQtOuHFLYRMtpBiTbPeppidq@gondola.proxy.rlwy.net:29702"
