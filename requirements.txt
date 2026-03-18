@@ -1,6 +1,7 @@
 fastapi
-uvicorn
+uvicorn[standard]
 redis
 motor
 pydantic
 python-multipart
+websockets
