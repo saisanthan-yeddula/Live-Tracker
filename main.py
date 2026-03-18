@@ -22,14 +22,11 @@ app.add_middleware(
 import os
 
 # Redis setup (Railway)
-# Prioritize REDIS_URL, then individual Railway variables, finally hardcoded public fallback
+# Prioritize REDIS_URL, then individual Railway variables, finally hardcoded internal fallback
 REDIS_URL = os.getenv("REDIS_URL")
 if not REDIS_URL:
-    r_host = os.getenv("REDISHOST", "centerbeam.proxy.rlwy.net")
-    r_port = os.getenv("REDISPORT", "52033")
-    r_user = os.getenv("REDISUSER", "default")
-    r_pass = os.getenv("REDISPASSWORD", "iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv")
-    REDIS_URL = f"redis://{r_user}:{r_pass}@{r_host}:{r_port}"
+    # Exact internal URL provided by user
+    REDIS_URL = "redis://default:iAdwbOHWUsfKhMzAAmwnBpPIkPhCEnQv@redis.railway.internal:6379"
 
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
 
