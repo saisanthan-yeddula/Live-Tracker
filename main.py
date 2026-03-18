@@ -21,9 +21,14 @@ app.add_middleware(
 
 import os
 
-# Redis setup (Hardcoded for testing)
-REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPIkPhCEnQv@centerbeam.proxy.rlwy.net:52033"
+# Redis setup (Final Fix)
+REDIS_URL = "redis://default:iAdwbOHWUsfKhMzAAmwnBpPIkPhCEnQv@centerbeam.proxy.rlwy.net:52033"
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
+
+@app.get("/test")
+async def test_redis():
+    await redis_client.ping()
+    return {"msg": "Redis working ✅"}
 
 @app.on_event("startup")
 async def startup_event():
