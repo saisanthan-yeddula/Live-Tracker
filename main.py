@@ -22,8 +22,15 @@ app.add_middleware(
 import os
 
 # Redis setup (Railway)
-# Use the internal REDIS_URL if available, fallback to public URL with password-only format
-REDIS_URL = os.getenv("REDIS_URL", "redis://:iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv@centerbeam.proxy.rlwy.net:52033")
+# Prioritize REDIS_URL, then individual Railway variables, finally hardcoded public fallback
+REDIS_URL = os.getenv("REDIS_URL")
+if not REDIS_URL:
+    r_host = os.getenv("REDISHOST", "centerbeam.proxy.rlwy.net")
+    r_port = os.getenv("REDISPORT", "52033")
+    r_user = os.getenv("REDISUSER", "default")
+    r_pass = os.getenv("REDISPASSWORD", "iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv")
+    REDIS_URL = f"redis://{r_user}:{r_pass}@{r_host}:{r_port}"
+
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
 
 # MongoDB setup (Railway)
