@@ -21,8 +21,8 @@ app.add_middleware(
 
 import os
 
-# Redis setup (Railway Internal)
-REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv@redis.railway.internal:6379"
+# Redis setup (Public URL fallback as internal DNS is failing)
+REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPIkPhCEnQv@centerbeam.proxy.rlwy.net:52033"
 redis_client = redis.from_url(REDIS_URL, decode_responses=True, retry_on_timeout=True)
 
 @app.on_event("startup")
