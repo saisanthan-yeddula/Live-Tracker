@@ -21,23 +21,8 @@ app.add_middleware(
 
 import os
 
-# Redis setup (Railway)
-# Check multiple possible Railway variables for maximum compatibility
-REDIS_URL = os.getenv("REDIS_URL") or os.getenv("REDIS_PUBLIC_URL")
-
-if not REDIS_URL:
-    # Try constructing from individual variables if they exist
-    r_host = os.getenv("REDISHOST")
-    r_port = os.getenv("REDISPORT")
-    r_pass = os.getenv("REDISPASSWORD")
-    if r_host and r_port and r_pass:
-        REDIS_URL = f"redis://default:{r_pass}@{r_host}:{r_port}"
-    else:
-        # Final fallback to your specific internal URL from screenshot
-        print("⚠️ No Redis env vars found. Using hardcoded fallback.")
-        REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv@redis.railway.internal:6379"
-
-print(f"DEBUG: Using REDIS_URL = {REDIS_URL}")
+# Redis setup (Railway Internal)
+REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv@redis.railway.internal:6379"
 redis_client = redis.from_url(REDIS_URL, decode_responses=True, retry_on_timeout=True)
 
 @app.on_event("startup")
