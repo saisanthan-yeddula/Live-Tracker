@@ -22,12 +22,19 @@ app.add_middleware(
 import os
 
 # Redis setup (Railway)
-REDIS_URL = os.getenv("REDIS_URL")
-if not REDIS_URL:
-    raise Exception("REDIS_URL not set in environment variables")
+# Using os.environ to force error if REDIS_URL is missing
+REDIS_URL = os.environ["REDIS_URL"]
+print(f"DEBUG: REDIS_URL from env = {REDIS_URL}")
 
-print(f"REDIS_URL: {REDIS_URL}")
 redis_client = redis.from_url(REDIS_URL, decode_responses=True, retry_on_timeout=True)
+
+@app.on_event("startup")
+async def startup_event():
+    try:
+        await redis_client.ping()
+        print("✅ Redis connection established successfully!")
+    except Exception as e:
+        print(f"❌ Redis connection FAILED: {str(e)}")
 
 # MongoDB setup (Railway)
 MONGO_URL = "mongodb://mongo:HUSXLthePQtOuHFLYRMtpBiTbPeppidq@gondola.proxy.rlwy.net:29702"
