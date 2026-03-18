@@ -22,11 +22,11 @@ app.add_middleware(
 import os
 
 # Redis setup (Railway)
-# Prioritize REDIS_URL, then individual Railway variables, finally hardcoded internal fallback
+# Prioritize REDIS_URL, then individual Railway variables, finally hardcoded public fallback
 REDIS_URL = os.getenv("REDIS_URL")
 if not REDIS_URL:
-    # Exact internal URL provided by user
-    REDIS_URL = "redis://default:iAdwbOHWUsfKhMzAAmwnBpPIkPhCEnQv@redis.railway.internal:6379"
+    # Use PUBLIC URL from screenshot as fallback (Internal DNS sometimes fails)
+    REDIS_URL = "redis://default:iAdwbOHWUsfKhmZAAmwnBpPiKPhCEnQv@centerbeam.proxy.rlwy.net:52033"
 
 redis_client = redis.from_url(REDIS_URL, decode_responses=True)
 
@@ -94,10 +94,11 @@ async def login(req: LoginRequest):
     user = await users_collection.find_one({"name": req.name, "password": req.password})
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
+    
     return {
         "user_id": str(user["_id"]),
         "name": user["name"],
-        "role_id": user["role_id"]
+        "role_id": user.get("role_id", ROLE_USER)
     }
 
 @app.post("/admin/create-user")
